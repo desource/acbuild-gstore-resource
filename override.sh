@@ -8,7 +8,9 @@ upload() {
     email=$(jq -r '.source.email // ""' < $payload)
 
     private_key_file=$(mktemp /tmp/private-key-file.XXXXXX)
-
+    
+    set -x    
+    
     echo $(jq -r '.source.private_key // ""' < $payload) > $private_key_file
 
     prefix=$(jq -r '.params.prefix // ""' < $payload)
@@ -19,8 +21,8 @@ upload() {
         cd $pwd
     fi
 
-    set -x
-    
+    cat $private_key_file
+
     /opt/bin/gstore \
         -bucket $bucket \
         -prefix $prefix \
