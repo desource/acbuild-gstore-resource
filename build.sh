@@ -13,6 +13,6 @@ cp ${src}/override.sh ${out}/override.sh
 cat <<EOF > ${out}/Dockerfile
 FROM quay.io/desource/acbuild-resource
 
-COPY gstore     /opt/bin/gstore
+COPY gstore       /opt/bin/gstore
 COPY override.sh  /opt/resource/override.sh
 EOF
