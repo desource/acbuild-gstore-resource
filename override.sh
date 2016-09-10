@@ -9,9 +9,11 @@ upload() {
 
     private_key_file=$(mktemp /tmp/private-key-file.XXXXXX)
     
-    set -x    
-    
-    echo $(jq -r '.source.private_key // ""' < $payload) > $private_key_file
+    set -x
+
+    cat <<EOF > $private_key_file
+$(jq -r '.source.private_key // ""' < $payload)
+EOF
 
     prefix=$(jq -r '.params.prefix // ""' < $payload)
     dir=$(jq -r '.params.dir // ""' < $payload)
