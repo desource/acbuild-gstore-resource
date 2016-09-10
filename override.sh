@@ -18,6 +18,9 @@ upload() {
     if [  -n "$pwd" ]; then
         cd $pwd
     fi
+
+    set -x
+    
     /opt/bin/gstore \
         -bucket $bucket \
         -prefix $prefix \
