@@ -3,11 +3,12 @@ image_resource:
   type: docker-image
   source: { repository: golang, tag: 1.7-alpine }
 
-run: { path: go/src/github.com/desource/acbuild-gstore-resource/build.sh }
-
 inputs:
 - name: acbuild-gstore
   path: go/src/github.com/desource/acbuild-gstore-resource
 
 outputs:
 - name: out
+
+run:
+  path: go/src/github.com/desource/acbuild-gstore-resource/ci/build.sh

@@ -30,6 +30,8 @@ var (
 	email      = flag.String("email", "", "service email")
 	privateKey = flag.String("privateKey", "", "private key")
 
+	publicRead = flag.Bool("public", false, "Enable public read")
+
 	compress = flag.Bool("compress", true, "Compress content")
 
 	cacheControl = "private, max-age=0"
@@ -56,10 +58,10 @@ func parseFlags() {
 }
 
 func main() {
-
 	parseFlags()
 
-	service := loadService(context.Background())
+	ctx := context.Background()
+	service := loadService(ctx)
 
 	for _, filename := range flag.Args() {
 		stat, err := os.Stat(filename)
@@ -95,7 +97,6 @@ func main() {
 }
 
 func loadService(ctx context.Context) *storage.Service {
-
 	key, err := ioutil.ReadFile(*privateKey)
 	if err != nil {
 		log.Fatalf("Unable to load creds: %v", err)
@@ -154,28 +155,32 @@ func uploadCompressedFile(service *storage.Service, filename string, size int64)
 
 	go func() {
 		gz := gzip.NewWriter(pw)
-		defer pw.Close()
-
+		defer func() {
+			gz.Close()
+			pw.Close()
+		}()
 		if _, err := io.Copy(gz, file); err != nil {
-			log.Fatalf("Compress failed: %v", err)
+			log.Fatalf("Compress Copy failed: %v", err)
 		}
 		if err := gz.Flush(); err != nil {
-			log.Fatalf("Compress failed: %v", err)
-		}
-		if err := gz.Close(); err != nil {
-			log.Fatalf("Compress failed: %v", err)
+			log.Fatalf("Compress Flush failed: %v", err)
 		}
 	}()
 
-	_, err = service.Objects.Insert(*bucketName, &storage.Object{
+	insert := service.Objects.Insert(*bucketName, &storage.Object{
 		Name:            p,
 		ContentEncoding: "gzip",
 		CacheControl:    cacheControl,
-	}).Media(pr, OCTET_STREAM).Do()
+	}).Media(pr, OCTET_STREAM)
 
-	if err != nil {
+	if publicRead != nil && *publicRead {
+		insert.PredefinedAcl("publicRead")
+	}
+
+	if _, err := insert.Do(); err != nil {
 		log.Fatalf("Objects.Insert failed: %v", err)
 	}
+
 	fmt.Printf("↝ %s (%s)\n", p, formatSize(size))
 }
 
