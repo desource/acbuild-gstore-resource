@@ -20,7 +20,7 @@ EOF
         args="${args} -bucket=${bucket}"
     fi
 
-    prefix=$(jq -r '.params.prefix // ""' < $payload)
+    prefix=$(jq -r '.source.prefix // ""' < $payload)
     if [ ! -z "${prefix}" ]; then
         args="${args} -prefix=${prefix}"
     fi
