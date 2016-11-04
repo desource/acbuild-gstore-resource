@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -ex
 
 export GOPATH=${PWD}/go
 export CGO_ENABLED=0

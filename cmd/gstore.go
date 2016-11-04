@@ -135,7 +135,7 @@ func uploadFile(service *storage.Service, filename string, size int64) {
 	}).Media(file, OCTET_STREAM).Do()
 
 	if err != nil {
-		log.Fatalf("Objects.Insert failed: %v", err)
+		log.Fatalf("Objects.Insert failed for %s: %v", p, err)
 	}
 	fmt.Printf("↝ %s (%s)\n", p, formatSize(size))
 }
@@ -178,7 +178,7 @@ func uploadCompressedFile(service *storage.Service, filename string, size int64)
 	}
 
 	if _, err := insert.Do(); err != nil {
-		log.Fatalf("Objects.Insert failed: %v", err)
+		log.Fatalf("Objects.Insert failed for %s: %v", p, err)
 	}
 
 	fmt.Printf("↝ %s (%s)\n", p, formatSize(size))
