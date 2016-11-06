@@ -20,20 +20,31 @@ EOF
         args="${args} -bucket=${bucket}"
     fi
 
-    prefix=$(jq -r '.source.prefix // ""' < $payload)
+    prefix=$(jq -r '.params.prefix // ""' < $payload)
     if [ ! -z "${prefix}" ]; then
         args="${args} -prefix=${prefix}"
+    else
+        prefix=$(jq -r '.source.prefix // ""' < $payload)
+        if [ ! -z "${prefix}" ]; then
+            args="${args} -prefix=${prefix}"
+        fi
     fi
  
+    public=$(jq -r '.params.public // ""' < $payload)
+    if [ ! -z "${public}" ]; then
+        args="${args} -public=${public}"
+    fi
+   
     dir=$(jq -r '.params.dir // ""' < $payload)
     if [ ! -z "${dir}" ]; then
         args="${args} ${dir}"
     fi
-   
+ 
     pwd=$(jq -r '.params.pwd // ""' < $payload)
     if [  -n "$pwd" ]; then
         cd $pwd
     fi
-    
+
+       
     eval /opt/bin/gstore ${args}
 }

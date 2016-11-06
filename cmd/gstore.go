@@ -32,7 +32,7 @@ var (
 
 	publicRead = flag.Bool("public", false, "Enable public read")
 
-	compress = flag.Bool("compress", true, "Compress content")
+	compress = flag.Bool("compress", false, "Compress content")
 
 	cacheControl = "private, max-age=0"
 )
